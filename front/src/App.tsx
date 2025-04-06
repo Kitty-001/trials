@@ -1,7 +1,6 @@
-// src/App.jsx
 import React from 'react';
 import Workflow from './components/Workflow';
-import './App.css';
+import './styles.css';
 
 function App() {
   return (

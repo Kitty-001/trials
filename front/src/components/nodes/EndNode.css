@@ -1,0 +1,15 @@
+/* src/components/nodes/EndNode.css */
+.end-node {
+    background-color: #d6d7d7; /* Example light blue background */
+    border: 1px solid #b7babb;
+    border-radius: 20px; /* Rounded corners */
+    padding: 10px 15px;
+    text-align: center;
+    width: 100px; /* Adjust width as needed */
+  }
+  
+  .end-node__label {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #26a69a; /* Example teal color */
+  }
