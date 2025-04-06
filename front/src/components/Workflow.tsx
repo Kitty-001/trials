@@ -9,11 +9,11 @@ import ReactFlow, {
   Edge,
   useNodesState,
   useEdgesState,
-  useReactFlow,
 } from 'react-flow-renderer';
+import { ReactFlowProvider } from '@xyflow/react';
 import StartNode from './nodes/StartNode';
 import EndNode from './nodes/EndNode';
-import AddNodeButton from './AddNodeButton'; // NEW: Custom Add Button
+import AddNodeButton from './AddButton'; // NEW: Custom Add Button
 import { getEdgeCenter } from '../utils/nodeUtils'; // Import the utility function
 import '@xyflow/react/dist/style.css';
 
@@ -28,13 +28,13 @@ type CustomNode = Node<CustomNodeData>;
 
 const initialNodes: CustomNode[] = [
   {
-    id: 'start',
+    id: '1',
     type: 'start',
     position: { x: 100, y: 100 },
     data: { label: 'Start' }, // Initial label
   },
   {
-    id: 'end',
+    id: '2',
     type: 'end',
     position: { x: 400, y: 100 },
     data: { label: 'END' }, // Initial label
@@ -42,7 +42,7 @@ const initialNodes: CustomNode[] = [
 ];
 
 const initialEdges: Edge[] = [
-  { id: 'e1-2', source: 'start', target: 'end' }, // Initial edge
+  { id: 'e1-2', source: '1', target: '2' }, // Initial edge
 ];
 
 const nodeTypes = {
@@ -77,25 +77,40 @@ const Workflow = () => {
   // <div style={{ width: '100%', height: '100%' }}></div>
   
   return (
-    <div style={{ width: '100vw', height: '100vh' }}>
-      <ReactFlow
-        nodes={nodes}
-        edges={edges}
-        onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
-        onConnect={onConnect}
-        nodeTypes={nodeTypes}
+    // <ReactFlowProvider>
+      <div
+        style={{
+          width: '100vw',
+          height: '100vh',
+          position: 'relative',
+          overflow: 'hidden',
+        }}
       >
-        <Background />
-        <MiniMap />
-        <Controls />
-        {edgeCenter && (
-          <foreignObject x={edgeCenter.x - 15} y={edgeCenter.y - 15} width="30px" height="30px">
-            <AddNodeButton onAdd={handleAddNode} />
-          </foreignObject>
-        )}
-      </ReactFlow>
-    </div>
+        <ReactFlow
+          nodes={nodes}
+          edges={edges}
+          onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
+          onConnect={onConnect}
+          nodeTypes={nodeTypes}
+        >
+          <Background />
+          <MiniMap />
+          <Controls />
+          {/* Uncomment this block to include the AddNodeButton */}
+          {/* {edgeCenter && (
+            <foreignObject
+              x={edgeCenter.x - 15}
+              y={edgeCenter.y - 15}
+              width="30px"
+              height="30px"
+            >
+              <AddNodeButton onAdd={handleAddNode} />
+            </foreignObject>
+          )} */}
+        </ReactFlow>
+      </div>
+    // </ReactFlowProvider>
   );
 };
 
