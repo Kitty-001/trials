@@ -1,26 +1,37 @@
 import React from 'react';
-import { Edge } from 'reactflow';
+import { Edge, Node } from 'reactflow';
+import { getEdgeCenter } from '../utils/nodeUtils';
 
 interface AddButtonProps {
   edge: Edge;
-  onAdd: (sourceId: string, targetId: string) => void;
+  // nodes: { id: string; position: { x: number; y: number } }[]; // Nodes array
+  nodes: Node<any>[];
+  onAdd: (edge: Edge) => void;
 }
 
 const AddButton: React.FC<AddButtonProps> = ({ edge, onAdd }) => {
-  const edgeCenter = (source: { x: number; y: number }, target: { x: number; y: number }) => ({
-    x: (source.x + target.x) / 2,
-    y: (source.y + target.y) / 2,
-  });
-
-  const source = { x: 0, y: 0 }; // Replace with logic to find the source position
-  const target = { x: 100, y: 100 }; // Replace with logic to find the target position
-
-  const center = edgeCenter(source, target);
-
   return (
-    <foreignObject x={center.x - 15} y={center.y - 15} width="30px" height="30px">
-      <button onClick={() => onAdd(edge.source, edge.target)}>+</button>
-    </foreignObject>
+    <div >
+      <button
+        onClick={() => onAdd(edge)}
+        style={{
+          backgroundColor: 'white',
+          border: '2px solid #3498db',
+          borderRadius: '50%',
+          width: '30px',
+          height: '30px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontSize: '1.5em',
+          color: '#3498db',
+          cursor: 'pointer',
+          outline: 'none',
+        }}
+      >
+        +
+      </button>
+    </div>
   );
 };
 

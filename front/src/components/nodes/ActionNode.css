@@ -1,0 +1,21 @@
+/* src/components/nodes/ActionNode.css */
+.action-node {
+    background-color: #fcffff; /* Example light blue background */
+    border: 1px solid #b7babb;
+    border-radius: 8px; /* Rounded corners */
+    padding: 10px 15px;
+    text-align: center;
+    width: 100px; /* Adjust width as needed */
+  }
+  
+  .action-node__title {
+    font-size: 0.8em;
+    color: #000000; /* Example teal color */
+    margin-bottom: 5px;
+  }
+  
+  .action-node__label {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #58dffd; /* Example teal color */
+  }

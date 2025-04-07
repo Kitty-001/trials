@@ -21,3 +21,9 @@
   .react-flow__edge.cut-end .react-flow__edge-path {
     stroke-dasharray: 20 0; /* Adjust dash length */
   }
+
+  .react-flow__renderer {
+    overflow: visible;
+    z-index: 1;
+  }
+  

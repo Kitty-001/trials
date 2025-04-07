@@ -7,7 +7,7 @@
       "ES2015"
     ],
     "moduleResolution": "node",
-    "jsx": "react",
+    "jsx": "react-jsx",
     "esModuleInterop": true,
     "skipLibCheck": true,
     "strict": true,

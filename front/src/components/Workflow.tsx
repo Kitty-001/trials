@@ -1,21 +1,22 @@
 import React, { useMemo, useState, useCallback } from 'react';
-import ReactFlow, {
+import {
+  ReactFlow, 
   addEdge,
   Background,
-  ConnectionLineType,
   Controls,
   MiniMap,
   Node,
   Edge,
   useNodesState,
   useEdgesState,
-} from 'react-flow-renderer';
-import { ReactFlowProvider } from '@xyflow/react';
+} from '@xyflow/react';
 import StartNode from './nodes/StartNode';
 import EndNode from './nodes/EndNode';
-import AddNodeButton from './AddButton'; // NEW: Custom Add Button
+import AddButton from './AddButton'; // NEW: Custom Add Button
+import CustomEdge from './CustomEdge';
 import { getEdgeCenter } from '../utils/nodeUtils'; // Import the utility function
 import '@xyflow/react/dist/style.css';
+import ActionNode from './nodes/ActionNode';
 
 
 
@@ -36,18 +37,19 @@ const initialNodes: CustomNode[] = [
   {
     id: '2',
     type: 'end',
-    position: { x: 400, y: 100 },
+    position: { x: 100, y: 400 },
     data: { label: 'END' }, // Initial label
   },
 ];
 
 const initialEdges: Edge[] = [
-  { id: 'e1-2', source: '1', target: '2' }, // Initial edge
+  { id: 'e1-2', source: '1', target: '2', type: 'customEdge' }, // Initial edge
 ];
 
 const nodeTypes = {
   start: StartNode,
   end: EndNode,
+  action: ActionNode,
 };
 
 const Workflow = () => {
@@ -62,54 +64,60 @@ const Workflow = () => {
     [setEdges],
   );
 
-  const handleAddNode = useCallback(() => {
-    // Placeholder for Level 2 functionality
-    alert('Add Node Clicked (Level 2 functionality)');
-  }, []);
+  // Handle node addition when "+" button is clicked
+  const handleAddNode = useCallback((edge: Edge) => {
+    const newNodeId = `node-${Date.now()}`;
+    const sourceNode = nodes.find((node) => node.id === edge.source);
+    const targetNode = nodes.find((node) => node.id === edge.target);
 
-  // Calculate the edge center dynamically using the utility function
-  const edgeCenter = useMemo(() => {
-    return getEdgeCenter(nodes, 'start', 'end'); // Use the utility function
-  }, [nodes]);
+    if (!sourceNode || !targetNode) {
+      console.error('Source or Target node not found');
+      return;
+    }
 
-  console.log('edgeCenter:', edgeCenter); // Add this line
-  // return (
-  // <div style={{ width: '100%', height: '100%' }}></div>
-  
+    const newNode: CustomNode = {
+      id: newNodeId,
+      type: 'action',
+      position: getEdgeCenter(nodes, edge), // Dynamically position the new node
+      data: { label: 'New Node' },
+    };
+
+    setNodes((prevNodes) => [...prevNodes, newNode]);
+    setEdges((prevEdges) => [
+      ...prevEdges.filter((e) => e.id !== edge.id), // Remove the old edge
+      { id: `e${edge.source}-${newNodeId}`, source: edge.source, target: newNodeId, type: 'customEdge' },
+      { id: `e${newNodeId}-${edge.target}`, source: newNodeId, target: edge.target, type: 'customEdge' },
+    ]);
+  }, [nodes, edges, setNodes, setEdges]);
+
+  const edgeTypes = useMemo(() => ({
+    customEdge: (props: any) => <CustomEdge {...props} onAdd={handleAddNode} />, // Pass handleAddNode as a prop
+  }), [handleAddNode]);
+
   return (
     // <ReactFlowProvider>
-      <div
-        style={{
-          width: '100vw',
-          height: '100vh',
-          position: 'relative',
-          overflow: 'hidden',
-        }}
+    <div
+      style={{
+        width: '100vw',
+        height: '100vh',
+        position: 'relative',
+        overflow: 'visible',
+      }}
+    >
+      <ReactFlow
+        nodes={nodes}
+        edges={edges}
+        onNodesChange={onNodesChange}
+        onEdgesChange={onEdgesChange}
+        onConnect={onConnect}
+        nodeTypes={nodeTypes}
+        edgeTypes={edgeTypes}
       >
-        <ReactFlow
-          nodes={nodes}
-          edges={edges}
-          onNodesChange={onNodesChange}
-          onEdgesChange={onEdgesChange}
-          onConnect={onConnect}
-          nodeTypes={nodeTypes}
-        >
-          <Background />
-          <MiniMap />
-          <Controls />
-          {/* Uncomment this block to include the AddNodeButton */}
-          {/* {edgeCenter && (
-            <foreignObject
-              x={edgeCenter.x - 15}
-              y={edgeCenter.y - 15}
-              width="30px"
-              height="30px"
-            >
-              <AddNodeButton onAdd={handleAddNode} />
-            </foreignObject>
-          )} */}
-        </ReactFlow>
-      </div>
+        <Background />
+        <MiniMap />
+        <Controls />
+      </ReactFlow>
+    </div>
     // </ReactFlowProvider>
   );
 };

@@ -1,4 +1,4 @@
-import { Node } from 'react-flow-renderer';
+import { Node } from '@xyflow/react';
 
 export type CustomNodeData = {
   label: string;
