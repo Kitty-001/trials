@@ -1,0 +1,34 @@
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+
+
+# Environment variables
+.env                # VERY IMPORTANT: Never commit your .env file!
+
+# Database
+*.sql               # If you have any local SQL dumps (optional, but often a good idea to exclude)
+#database/*.db      # If you're using a local database file (e.g., SQLite - not applicable here, but for completeness)
+
+# Logs
+*.log                # Any log files
+
+# OS
+.DS_Store            # macOS file - Stores folder view preferences
+Thumbs.db             # Windows file - Stores thumbnail cache
+
+# IDEs and Editors
+.idea/               # IntelliJ IDEA project files
+.vscode/             # VS Code settings
+*.swp                # Swap files (e.g., from Vim)
+*~                   # Backup files (e.g., from Emacs)
+
+# Deployment
+/build/              # If you create a build directory
+
+# Dependency directories
+/dependencies/       # If you have a dependencies directory
+
+# Temporary files
+/tmp/
