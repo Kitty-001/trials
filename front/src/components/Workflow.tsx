@@ -12,12 +12,11 @@ import {
 } from '@xyflow/react';
 import StartNode from './nodes/StartNode';
 import EndNode from './nodes/EndNode';
-import AddButton from './AddButton'; // NEW: Custom Add Button
 import CustomEdge from './CustomEdge';
 import { getEdgeCenter } from '../utils/nodeUtils'; // Import the utility function
 import '@xyflow/react/dist/style.css';
 import ActionNode from './nodes/ActionNode';
-
+import ActionNodeForm from './forms/ActionNodeForm';
 
 
 // Define CustomNode types for type safety
@@ -56,6 +55,9 @@ const Workflow = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
 
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedNode, setSelectedNode] = useState<CustomNode | null>(null);
+
   const onConnect = useCallback(
     (params: any) =>
       setEdges((eds) =>
@@ -90,9 +92,72 @@ const Workflow = () => {
     ]);
   }, [nodes, edges, setNodes, setEdges]);
 
+  // Handle Action Node click to open the form
+  const handleActionClick = (node: CustomNode) => {
+    setSelectedNode(node); // Set the selected Action Node for editing
+    setModalOpen(true); // Open the form modal
+  };
+
+  // Rename the selected Action Node
+  const handleRenameNode = (newName: string) => {
+    if (!selectedNode) return;
+
+    setNodes((prevNodes) =>
+      prevNodes.map((node) =>
+        node.id === selectedNode.id ? { ...node, data: { ...node.data, label: newName } } : node
+      )
+    );
+  };
+
+  // Handle deleting a node and restoring the original edge
+  const handleDeleteNode = () => {
+    if (!selectedNode) return;
+
+    // Find edges connected to the selected node
+    const incomingEdge = edges.find((edge) => edge.target === selectedNode.id);
+    const outgoingEdge = edges.find((edge) => edge.source === selectedNode.id);
+
+    if (incomingEdge && outgoingEdge) {
+      // Restore the original edge between the source of the incoming edge
+      // and the target of the outgoing edge
+      const restoredEdge: Edge = {
+        id: `e${incomingEdge.source}-${outgoingEdge.target}`,
+        source: incomingEdge.source,
+        target: outgoingEdge.target,
+        type: 'customEdge', // Ensure it uses the customEdge type
+      };
+
+      setEdges((prevEdges) =>
+        prevEdges.filter(
+          (edge) => edge.source !== selectedNode.id && edge.target !== selectedNode.id
+        ).concat(restoredEdge) // Add the restored edge
+      );
+    } else {
+      // If no incoming or outgoing edges, just remove the node and edges
+      setEdges((prevEdges) =>
+        prevEdges.filter(
+          (edge) => edge.source !== selectedNode.id && edge.target !== selectedNode.id
+        )
+      );
+    }
+
+    // Remove the node itself
+    setNodes((prevNodes) => prevNodes.filter((node) => node.id !== selectedNode.id));
+
+    // Close the modal
+    setModalOpen(false);
+  };
+
+
   const edgeTypes = useMemo(() => ({
     customEdge: (props: any) => <CustomEdge {...props} onAdd={handleAddNode} />, // Pass handleAddNode as a prop
   }), [handleAddNode]);
+
+  const nodeTypes = useMemo(() => ({
+    start: StartNode,
+    end: EndNode,
+    action: (props: any) => <ActionNode {...props} onActionClick={handleActionClick} />,
+  }), [handleActionClick]);
 
   return (
     // <ReactFlowProvider>
@@ -117,6 +182,14 @@ const Workflow = () => {
         <MiniMap />
         <Controls />
       </ReactFlow>
+      {modalOpen && selectedNode && (
+        <ActionNodeForm
+          nodeName={selectedNode.data.label}
+          onClose={() => setModalOpen(false)}
+          onRename={handleRenameNode}
+          onDelete={handleDeleteNode}
+        />
+      )}
     </div>
     // </ReactFlowProvider>
   );
