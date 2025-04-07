@@ -1,70 +1,78 @@
-# Getting Started with Create React App
+# React Flow Workflow Editor
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A simple workflow editor built using React and the React Flow library. This application allows users to create and manipulate nodes and edges, add new action nodes to edges, change the name of action nodes, and delete action nodes.
 
-## Available Scripts
+## Table of Contents
 
-In the project directory, you can run:
+- [React Flow Workflow Editor](#react-flow-workflow-editor)
+  - [Table of Contents](#table-of-contents)
+  - [Setup](#setup)
+  - [Key Features](#key-features)
+  - [Assumptions](#assumptions)
+  - [Challenges and Resolutions](#challenges-and-resolutions)
 
-### `npm start`
+## Setup
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/Kitty-001/trials.git
+   cd front
+   ```
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+2. **Install dependencies:**   
+    Make sure you have Node.js and npm (or yarn) installed on your system. Navigate to the project directory in your terminal and run:
 
-### `npm test`
+    ```bash
+    npm install
+    # or
+    yarn install
+    ```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+3. **Run the Application:**     
+   ```bash
+   npm start
+   # or
+   yarn start
+   ```
+   The application should automatically open in your web browser, usually at http://localhost:3000. If it doesn't open automatically, navigate to this URL in your browser.
 
-### `npm run build`
+## Key Features
+- Node Creation: Includes three basic node types:
+    - Start Node: Represents the beginning of a workflow.
+    - End Node: Represents the termination of a workflow.
+    - Action Node: Represents a processing step in the workflow, with an editable label.
+  - Edge Connection: Allows connecting nodes by dragging from the output handle of one node to the input handle of another, creating custom edges.
+  - Add Action Node to Edge: Clicking the "+" button that appears on an existing edge inserts a new Action Node onto that edge, splitting the original connection into two new edges.
+  - Change Action Node Name: Double-clicking an Action Node allows for in-place editing of its label. The changes are saved when the input loses focus or when the Enter key is pressed.
+  - Delete Action Node: Selecting an Action Node (by single-clicking it) reveals a small "X" button. Clicking this button removes the Action Node and any edges directly connected to it.
+  - Node Dragging: Users can click and drag nodes to reposition them on the workflow canvas.
+  - Zoom and Pan: The React Flow library provides built-in zoom and pan functionality for navigating the workflow.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Assumptions
+1. React Development Environment: It is assumed that anyone setting up this application has a basic understanding of React and has a working Node.js and npm/yarn development environment configured.
+2. Modern Web Browser: The application is designed to run on modern web browsers that support ES6+ JavaScript features and basic web APIs.
+3. Simplified Workflow Logic: This editor focuses on the visual manipulation of nodes and edges. It does not implement any specific workflow execution logic or data processing.
+4. Front-End Only: This is a purely front-end application. Workflow data is not persisted across sessions unless explicitly implemented (e.g., using local storage or a backend).
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## Challenges and Resolutions
+During the development of this workflow editor, several challenges were encountered and addressed:
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+- Implementing the "Add Node to Edge" Functionality:
 
-### `npm run eject`
+    - Challenge: Determining the precise position to insert the new node on the edge and correctly splitting the existing edge into two new connections while maintaining the flow.
+    - Resolution: The getEdgeCenter utility function was used to calculate the midpoint of the edge. When the "+" button is clicked, a new Action Node is created at this position. The original edge is then removed, and two new edges are created, connecting the original source node to the new node and the new node to the original target node.
+  
+- Ensuring Dynamic Updates with React Flow State:
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+    - Challenge: Making sure that changes to nodes (like label edits or deletion) and edges (creation, deletion) were correctly reflected in the React Flow UI and the underlying state managed by useNodesState and useEdgesState.
+    - Resolution: Utilizing the setNodes and setEdges state update functions provided by the useNodesState and useEdgesState hooks, ensuring that state updates were performed immutably by creating new arrays or objects based on the previous state. The onNodesChange handler was used for position updates.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+- Addressing TypeScript Type Compatibility with Custom Nodes:
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+    - Challenge: Encountering TypeScript errors related to the nodeTypes prop of the ReactFlow component, specifically with the custom ActionNode component not being fully compatible with the expected NodeTypes interface.
+    - Resolution: The ActionNode component's props interface (ActionNodeProps) was explicitly extended from NodeProps from @xyflow/react. This ensured that the custom node component was guaranteed to receive all the standard properties that React Flow provides to its node renderers, resolving the type mismatch.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+- Designing the User Interaction for Editing and Deleting Action Nodes:
 
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+    - Challenge: Deciding on the most intuitive and efficient way for users to modify and remove Action Nodes.
+    - Resolution: A hybrid approach was implemented. Double-clicking was chosen for quick, in-place editing of the node label. Single-clicking selects the node, which then reveals a clearly visible "X" button for deletion. This balances direct editing with a deliberate action for removal.
