@@ -1,11 +1,18 @@
- 1. Database Setup
- Create a database with two primary tables: contacts and messages. Schema is provided.
- Structure the messages table to store messages associated with the contacts.
- 2. Data Generation
- Populate the database with 100,000 dummy contacts and 5 million messages randomly
- distributed among the contacts. For the messages, please incorporate the data in
- ‘message_content.csv’ (about 180k rows).
- Download ‘message_content.csv’ here:
- https://drive.google.com/file/d/1hwQyxSSYU5dhBjjZSbRiGC0QDafnLqyZ/view?usp=sharing
- You can then generate dummy messages to produce a total of at least 5 million rows by
- using the message content within the csv
+-- Create contacts table
+CREATE TABLE contacts (
+    id SERIAL PRIMARY KEY,
+    phone_number VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Create messages table
+CREATE TABLE messages (
+    id SERIAL PRIMARY KEY,
+    contact_id INTEGER REFERENCES contacts(id) ON DELETE CASCADE,
+    content TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX idx_contact_id ON messages(contact_id);
+CREATE INDEX idx_created_at ON messages(created_at);
+CREATE INDEX idx_content ON messages(content);
